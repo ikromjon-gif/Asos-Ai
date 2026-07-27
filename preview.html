@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI assistant that answers questions about the Constitution of the Republic of Uzbekistan.">
+<title>Uzbekistan Constitution AI Chatbot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   Uzbekistan Constitution AI Chatbot
+   Design system: white / near-black / green (single accent)
+   ========================================================================== */
+
+/* ---------- 1. Design tokens ---------- */
+:root{
+  /* Surfaces */
+  --white:        #FFFFFF;
+  --mist:         #F4F7F5;
+  --mist-2:       #ECF6EF;
+
+  /* Ink (near-black) */
+  --ink:          #14171A;
+  --ink-70:       rgba(20,23,26,0.70);
+  --ink-55:       rgba(20,23,26,0.55);
+  --ink-35:       rgba(20,23,26,0.35);
+  --ink-16:       rgba(20,23,26,0.16);
+  --ink-10:       rgba(20,23,26,0.10);
+  --near-black:   #000000;
+
+  /* Brand green — the single accent color against black/white */
+  --green-deep:   #146C2E;
+  --green:        #1EB53A;
+  --green-light:  #6FDD8B;
+  --green-10:     rgba(30,181,58,0.10);
+
+  --gradient-brand: linear-gradient(135deg, var(--green-deep) 0%, var(--green) 100%);
+  --gradient-brand-deep: linear-gradient(135deg, var(--near-black) 0%, var(--green-deep) 100%);
+
+  --shadow-color: 150 20% 8%;
+  --shadow-sm: 0 2px 8px -4px hsl(var(--shadow-color) / 0.18);
+  --shadow-md: 0 12px 28px -14px hsl(var(--shadow-color) / 0.22);
+  --shadow-lg: 0 30px 60px -24px hsl(var(--shadow-color) / 0.28);
+
+  /* Spacing scale */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 40px;
+
+  /* Radius scale */
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 26px; --r-full: 999px;
+
+  /* Type scale */
+  --fs-xs: 11px; --fs-sm: 12.5px; --fs-base: 14.5px; --fs-md: 15.5px;
+  --fs-lg: 19px; --fs-xl: 22px;
+
+  --header-h: 68px;
+  --ease: cubic-bezier(.22,.9,.35,1);
+}
+
+/* ---------- 2. Reset ---------- */
+*, *::before, *::after{ box-sizing:border-box; }
+html, body{ height:100%; }
+body{
+  margin:0;
+  font-family:'Inter', sans-serif;
+  font-size:var(--fs-base);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(circle at 6% -4%, rgba(30,181,58,0.14), transparent 40%),
+    radial-gradient(circle at 100% 6%, rgba(20,23,26,0.16), transparent 42%),
+    radial-gradient(circle at 45% 100%, rgba(30,181,58,0.09), transparent 46%),
+    linear-gradient(165deg, #EAF3FF 0%, #F6FBF7 55%, #EAFBEF 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  animation:appIn 0.5s var(--ease) both;
+}
+button{ font:inherit; color:inherit; }
+input{ font:inherit; }
+a{ color:inherit; }
+ul, dl, dd{ margin:0; padding:0; }
+
+/* Base icon behavior: line icons stroke currentColor; .icon-fill elements are solid */
+.icon{
+  width:20px; height:20px;
+  flex-shrink:0;
+}
+.icon *{
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;
+}
+.icon .icon-fill{ fill:currentColor; stroke:none; }
+.icon--sm{ width:16px; height:16px; }
+
+.icon-btn{
+  width:38px; height:38px;
+  display:flex; align-items:center; justify-content:center;
+  background:none;
+  border:1px solid var(--ink-10);
+  border-radius:var(--r-sm);
+  color:var(--near-black);
+  cursor:pointer;
+  transition:background 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.icon-btn:hover{ background:var(--mist); }
+.icon-btn:active{ transform:scale(0.94); }
+
+@keyframes appIn{ from{ opacity:0; } to{ opacity:1; } }
+
+/* ---------- 3. Header ---------- */
+.app-header{
+  position:fixed; inset:0 0 auto 0;
+  height:var(--header-h);
+  z-index:100;
+  background:rgba(255,255,255,0.74);
+  backdrop-filter:blur(18px) saturate(1.4);
+  -webkit-backdrop-filter:blur(18px) saturate(1.4);
+  border-bottom:1px solid var(--ink-10);
+  box-shadow:var(--shadow-sm);
+}
+.header-inner{
+  max-width:1240px; height:100%;
+  margin:0 auto; padding:0 20px;
+  display:flex; align-items:center; gap:14px;
+}
+.sidebar-toggle{ display:none; }
+
+.header-brand{ display:flex; align-items:center; gap:12px; min-width:0; flex:1; }
+
+.seal{
+  border-radius:50%;
+  background:var(--gradient-brand-deep);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-sm);
+  transition:transform 0.4s var(--ease);
+}
+.seal--header{ width:40px; height:40px; }
+.seal--header .icon{ width:23px; height:23px; color:var(--white); }
+.header-brand:hover .seal--header{ transform:rotate(18deg); }
+
+.header-titles{ min-width:0; }
+.header-titles h1{
+  font-family:'Spectral', serif;
+  font-weight:600;
+  font-size:var(--fs-lg);
+  margin:0;
+  letter-spacing:-0.01em;
+  line-height:1.2;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.header-titles p{
+  margin:1px 0 0;
+  font-size:var(--fs-xs);
+  color:var(--ink-55);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.status-pill{
+  display:flex; align-items:center; gap:7px;
+  flex-shrink:0;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:var(--fs-xs);
+  letter-spacing:0.04em;
+  color:var(--green-deep);
+  background:rgba(30,181,58,0.10);
+  border:1px solid rgba(30,181,58,0.25);
+  padding:6px 12px 6px 10px;
+  border-radius:var(--r-full);
+}
+.status-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 0 rgba(30,181,58,0.55);
+  animation:pulse 2.2s infinite;
+}
+@keyframes pulse{
+  0%{ box-shadow:0 0 0 0 rgba(30,181,58,0.45); }
+  70%{ box-shadow:0 0 0 7px rgba(30,181,58,0); }
+  100%{ box-shadow:0 0 0 0 rgba(30,181,58,0); }
+}
+
+/* ---------- 4. Body layout ---------- */
+.app-body{
+  display:flex;
+  max-width:1240px;
+  margin:0 auto;
+  padding:calc(var(--header-h) + var(--sp-6)) 20px var(--sp-6);
+  gap:var(--sp-6);
+  min-height:100vh;
+}
+.sidebar-overlay{
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(20,23,26,0.38);
+  backdrop-filter:blur(2px);
+  z-index:150;
+}
+.sidebar-overlay.visible{ display:block; animation:fadeIn 0.2s var(--ease); }
+@keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+/* ---------- 5. Sidebar ---------- */
+.sidebar{
+  width:296px; flex-shrink:0;
+  display:flex; flex-direction:column; gap:var(--sp-4);
+  height:fit-content;
+  position:sticky; top:calc(var(--header-h) + var(--sp-6));
+}
+.sidebar-close{ display:none; align-self:flex-end; }
+
+.panel{
+  background:rgba(255,255,255,0.68);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.7);
+  border-radius:var(--r-lg);
+  padding:var(--sp-5);
+  box-shadow:var(--shadow-md);
+}
+.panel-title{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:var(--fs-xs);
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--green-deep);
+  margin:0 0 var(--sp-3);
+}
+.panel-text{
+  margin:0;
+  font-size:13.5px;
+  line-height:1.6;
+  color:var(--ink-70);
+}
+
+.about-stats{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:var(--sp-2);
+  margin-top:var(--sp-4);
+  padding-top:var(--sp-4);
+  border-top:1px dashed var(--ink-16);
+}
+.about-stats > div{ text-align:center; }
+.about-stats dt{
+  font-size:9.5px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--ink-35);
+  margin-bottom:3px;
+}
+.about-stats dd{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  font-weight:500;
+  color:var(--green-deep);
+}
+
+.sample-questions{ display:flex; flex-direction:column; gap:var(--sp-2); }
+.sample-q{
+  display:flex; align-items:center; gap:10px;
+  text-align:left;
+  background:var(--mist);
+  border:1px solid var(--ink-10);
+  color:var(--ink);
+  font-size:13px;
+  line-height:1.4;
+  padding:10px 12px;
+  border-radius:var(--r-sm);
+  cursor:pointer;
+  transition:transform 0.15s var(--ease), background 0.15s var(--ease), border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.sample-q .icon{ color:var(--green); flex-shrink:0; }
+.sample-q:hover{
+  background:linear-gradient(135deg, rgba(30,181,58,0.10), rgba(20,23,26,0.05));
+  border-color:rgba(30,181,58,0.30);
+  box-shadow:var(--shadow-sm);
+  transform:translateX(2px);
+}
+.sample-q:active{ transform:translateX(2px) scale(0.98); }
+
+/* Developer credit */
+.developer-block{ display:flex; align-items:center; gap:12px; }
+.developer-photo{
+  width:52px; height:52px; border-radius:50%; flex-shrink:0;
+  object-fit:cover;
+  border:2px solid var(--green);
+  box-shadow:var(--shadow-sm);
+}
+.developer-photo--fallback{
+  display:flex; align-items:center; justify-content:center;
+  background:var(--mist);
+  font-family:'Spectral', serif; font-weight:600; font-size:17px;
+  color:var(--near-black);
+}
+.developer-info{ display:flex; flex-direction:column; min-width:0; }
+.dev-label{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--green-deep); margin-bottom:2px;
+}
+.dev-name{
+  font-family:'Spectral', serif; font-weight:700; font-size:14.5px;
+  text-transform:uppercase; letter-spacing:0.01em; margin-bottom:3px;
+}
+.dev-contact{
+  font-size:11.5px; color:var(--ink-70);
+  text-decoration:none;
+  border-bottom:1px solid rgba(30,181,58,0.32);
+  width:fit-content;
+  transition:color 0.15s, border-color 0.15s;
+}
+.dev-contact:hover{ color:var(--green-deep); border-color:var(--green-deep); }
+
+/* ---------- 6. Chat container ---------- */
+.chat-wrap{ flex:1; min-width:0; display:flex; }
+
+.chat-container{
+  position:relative;
+  flex:1;
+  display:flex; flex-direction:column;
+  background:rgba(255,255,255,0.58);
+  backdrop-filter:blur(24px) saturate(1.3);
+  -webkit-backdrop-filter:blur(24px) saturate(1.3);
+  border:1px solid rgba(255,255,255,0.65);
+  border-radius:var(--r-xl);
+  box-shadow:var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow:hidden;
+  min-height:560px;
+  max-height:calc(100vh - var(--header-h) - 48px);
+  animation:riseIn 0.5s var(--ease) both 0.1s;
+}
+@keyframes riseIn{
+  from{ opacity:0; transform:translateY(14px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.chat-messages{
+  flex:1;
+  overflow-y:auto;
+  padding:var(--sp-6);
+  display:flex; flex-direction:column; gap:2px;
+  scroll-behavior:smooth;
+}
+.chat-messages::-webkit-scrollbar{ width:8px; }
+.chat-messages::-webkit-scrollbar-thumb{ background:var(--ink-16); border-radius:8px; }
+.chat-messages::-webkit-scrollbar-thumb:hover{ background:var(--ink-35); }
+
+/* Message groups: consecutive same-sender messages collapse spacing */
+.msg-group{ display:flex; flex-direction:column; gap:6px; margin-top:var(--sp-5); }
+.msg-group:first-child{ margin-top:0; }
+.msg-group.user{ align-items:flex-end; }
+.msg-group.bot{ align-items:flex-start; }
+
+.msg-row{
+  display:flex; gap:10px;
+  max-width:80%;
+  animation:msgIn 0.35s var(--ease) both;
+}
+.msg-group.user .msg-row{ flex-direction:row-reverse; }
+
+@keyframes msgIn{
+  from{ opacity:0; transform:translateY(8px) scale(0.98); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+.avatar{
+  width:32px; height:32px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-sm);
+  visibility:hidden;
+}
+.avatar--bot{ background:var(--gradient-brand-deep); }
+.avatar--bot .icon{ width:18px; height:18px; color:var(--white); }
+.msg-row.avatar-visible .avatar{ visibility:visible; }
+
+.msg-content{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.msg-group.user .msg-content{ align-items:flex-end; }
+
+.bubble{
+  padding:11px 15px;
+  border-radius:var(--r-md);
+  font-size:var(--fs-base);
+  line-height:1.55;
+  word-wrap:break-word;
+  box-shadow:var(--shadow-sm);
+}
+.msg-group.bot .bubble{
+  background:var(--white);
+  border:1px solid var(--ink-10);
+  color:var(--ink);
+  border-top-left-radius:5px;
+}
+.msg-group.user .bubble{
+  background:var(--gradient-brand);
+  color:var(--white);
+  border-top-right-radius:5px;
+}
+
+.msg-time{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10px;
+  color:var(--ink-35);
+  padding:0 4px;
+}
+
+/* Quick-reply chips shown after a bot answer */
+.chip-row{
+  display:flex; flex-wrap:wrap; gap:7px;
+  margin:10px 0 4px 42px;
+  max-width:80%;
+  animation:msgIn 0.35s var(--ease) both;
+}
+.chip{
+  background:var(--white);
+  border:1px solid rgba(30,181,58,0.28);
+  color:var(--green-deep);
+  font-size:12.5px;
+  padding:7px 13px;
+  border-radius:var(--r-full);
+  cursor:pointer;
+  transition:background 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.chip:hover{ background:rgba(30,181,58,0.10); transform:translateY(-1px); }
+.chip:active{ transform:translateY(0) scale(0.97); }
+
+/* Typing indicator */
+.typing-indicator{
+  display:flex; align-items:center; gap:10px;
+  padding:0 var(--sp-6) var(--sp-4);
+}
+.typing-dots{
+  display:flex; gap:4px;
+  background:var(--white);
+  border:1px solid var(--ink-10);
+  padding:10px 14px;
+  border-radius:var(--r-md);
+  border-top-left-radius:5px;
+  box-shadow:var(--shadow-sm);
+}
+.typing-dots span{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green);
+  animation:bounce 1.2s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2){ animation-delay:0.15s; background:var(--green); }
+.typing-dots span:nth-child(3){ animation-delay:0.3s; background:var(--green-light); }
+@keyframes bounce{
+  0%, 60%, 100%{ transform:translateY(0); opacity:0.5; }
+  30%{ transform:translateY(-5px); opacity:1; }
+}
+
+/* Scroll-to-bottom floating button */
+.scroll-fab{
+  position:absolute;
+  right:22px; bottom:88px;
+  width:38px; height:38px;
+  border-radius:50%;
+  background:var(--white);
+  border:1px solid var(--ink-10);
+  color:var(--near-black);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-md);
+  cursor:pointer;
+  transition:transform 0.15s var(--ease), opacity 0.15s var(--ease);
+  z-index:5;
+}
+.scroll-fab:hover{ transform:translateY(-2px); }
+.scroll-fab[hidden]{ display:none; }
+
+/* ---------- 7. Input row ---------- */
+.chat-input-row{
+  display:flex; align-items:center; gap:10px;
+  padding:var(--sp-4) var(--sp-5);
+  border-top:1px solid var(--ink-10);
+  background:rgba(255,255,255,0.55);
+}
+#userInput{
+  flex:1;
+  border:1px solid var(--ink-10);
+  background:var(--white);
+  color:var(--ink);
+  font-size:var(--fs-base);
+  padding:12px 16px;
+  border-radius:var(--r-full);
+  outline:none;
+  transition:border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+#userInput:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 4px rgba(30,181,58,0.16);
+}
+#userInput::placeholder{ color:var(--ink-35); }
+
+.send-btn{
+  width:44px; height:44px; flex-shrink:0;
+  border:none; border-radius:50%;
+  background:var(--gradient-brand);
+  color:var(--white);
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-md);
+  transition:transform 0.15s var(--ease), opacity 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.send-btn .icon{ width:18px; height:18px; }
+.send-btn:hover:not(:disabled){ transform:translateY(-1px) scale(1.04); }
+.send-btn:active:not(:disabled){ transform:translateY(0) scale(0.96); }
+.send-btn:disabled{ opacity:0.4; cursor:default; box-shadow:none; }
+
+/* ==========================================================================
+   8. Responsive
+   ========================================================================== */
+@media (max-width: 880px){
+  .app-body{ padding-top:calc(var(--header-h) + var(--sp-4)); gap:0; }
+  .sidebar-toggle{ display:flex; }
+  .status-pill span:last-child{ display:none; }
+  .status-pill{ padding:6px; }
+
+  .sidebar{
+    position:fixed; inset:0 auto 0 0;
+    width:86%; max-width:320px; height:100vh;
+    padding:var(--sp-5) var(--sp-4) var(--sp-4);
+    background:rgba(246,251,247,0.94);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    z-index:200;
+    transform:translateX(-105%);
+    transition:transform 0.32s var(--ease);
+    overflow-y:auto;
+    border-right:1px solid var(--ink-10);
+  }
+  .sidebar.open{ transform:translateX(0); }
+  .sidebar-close{ display:flex; }
+
+  .chat-container{ min-height:calc(100vh - var(--header-h) - 32px); }
+}
+
+@media (max-width: 520px){
+  .header-titles p{ display:none; }
+  .msg-row, .chip-row{ max-width:94%; }
+  .chat-messages{ padding:var(--sp-4); }
+  .chat-input-row{ padding:var(--sp-3) var(--sp-4); }
+  .scroll-fab{ right:14px; bottom:78px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .msg-row, .chip-row, .chat-container, body{ animation:none; }
+  .typing-dots span, .status-dot{ animation:none; }
+  .sample-q, .send-btn, .seal--header{ transition:none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Reusable seal icon, referenced everywhere via <use> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="icon-seal" viewBox="0 0 60 60">
+    <circle cx="30" cy="30" r="27"/>
+    <path class="icon-fill" d="M30 10 L34 24 L48 24 L37 33 L41 47 L30 38 L19 47 L23 33 L12 24 L26 24 Z"/>
+  </symbol>
+  <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M6 4h9a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H6a2 2 0 0 0 0 4h11"/><path d="M6 4a2 2 0 0 0-2 2v13"/></symbol>
+  <symbol id="icon-scale" viewBox="0 0 24 24"><path d="M12 3v18M7 21h10M5 7h14M5 7 2 13a3 3 0 0 0 6 0L5 7ZM19 7l-3 6a3 3 0 0 0 6 0l-3-6Z"/></symbol>
+  <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="icon-hash" viewBox="0 0 24 24"><path d="M9 4 7 20M17 4l-2 16M4 9h16M3 15h16"/></symbol>
+  <symbol id="icon-send" viewBox="0 0 24 24"><path class="icon-fill" d="M3 11.5 20 4l-7.5 17-2-7.5L3 11.5Z"/></symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="icon-arrow-down" viewBox="0 0 24 24"><path d="M12 4v16M6 14l6 6 6-6"/></symbol>
+</svg>
+
+<!-- ===== Fixed header ===== -->
+<header class="app-header">
+  <div class="header-inner">
+    <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="sidebar">
+      <svg class="icon"><use href="#icon-menu"/></svg>
+    </button>
+
+    <div class="header-brand">
+      <span class="seal seal--header" aria-hidden="true"><svg class="icon"><use href="#icon-seal"/></svg></span>
+      <div class="header-titles">
+        <h1>Uzbekistan Constitution AI Chatbot</h1>
+        <p>Your guide to the Basic Law of the Republic of Uzbekistan</p>
+      </div>
+    </div>
+
+    <span class="status-pill" title="Assistant is ready to answer">
+      <span class="status-dot"></span> Online
+    </span>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar" id="sidebar" aria-label="About and sample questions">
+    <button class="icon-btn sidebar-close" id="sidebarClose" aria-label="Close menu">
+      <svg class="icon"><use href="#icon-close"/></svg>
+    </button>
+
+    <section class="panel panel--about">
+      <h2 class="panel-title">About</h2>
+      <p class="panel-text">
+        This assistant answers questions about the Constitution of the Republic of Uzbekistan —
+        adopted in 1992 and comprehensively renewed by national referendum in 2023.
+        Ask about specific articles, rights, state structure, or history.
+      </p>
+      <dl class="about-stats">
+        <div><dt>Adopted</dt><dd>Dec 8, 1992</dd></div>
+        <div><dt>Renewed</dt><dd>May 1, 2023</dd></div>
+        <div><dt>Articles</dt><dd>155</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel panel--questions">
+      <h2 class="panel-title">Sample Questions</h2>
+      <div class="sample-questions" id="sampleQuestions">
+        <button class="sample-q" data-q="When was the Constitution adopted?">
+          <svg class="icon icon--sm"><use href="#icon-calendar"/></svg>
+          <span>When was the Constitution adopted?</span>
+        </button>
+        <button class="sample-q" data-q="What is Article 41?">
+          <svg class="icon icon--sm"><use href="#icon-scroll"/></svg>
+          <span>What is Article 41?</span>
+        </button>
+        <button class="sample-q" data-q="What are citizens' rights?">
+          <svg class="icon icon--sm"><use href="#icon-scale"/></svg>
+          <span>What are citizens' rights?</span>
+        </button>
+        <button class="sample-q" data-q="What is the state language?">
+          <svg class="icon icon--sm"><use href="#icon-globe"/></svg>
+          <span>What is the state language?</span>
+        </button>
+        <button class="sample-q" data-q="How many articles are there?">
+          <svg class="icon icon--sm"><use href="#icon-hash"/></svg>
+          <span>How many articles are there?</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="panel panel--developer">
+      <div class="developer-block">
+        <img src="developer.jpg" alt="Tojiboev Ikromjon" class="developer-photo"
+             onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'developer-photo developer-photo--fallback',textContent:'TI'}))">
+        <div class="developer-info">
+          <span class="dev-label">Developer</span>
+          <span class="dev-name">Tojiboev Ikromjon</span>
+          <a class="dev-contact" href="mailto:ikromjonkorealife@gmail.com">ikromjonkorealife@gmail.com</a>
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ===== Chat area ===== -->
+  <main class="chat-wrap">
+    <div class="chat-container">
+
+      <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Conversation"></div>
+
+      <button class="scroll-fab" id="scrollFab" aria-label="Scroll to latest message" hidden>
+        <svg class="icon"><use href="#icon-arrow-down"/></svg>
+      </button>
+
+      <div class="typing-indicator" id="typingIndicator" hidden>
+        <span class="avatar avatar--bot"><svg class="icon"><use href="#icon-seal"/></svg></span>
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+
+      <form class="chat-input-row" id="chatForm">
+        <input type="text" id="userInput" name="message" placeholder="Ask about the Constitution…" maxlength="300" autocomplete="off" aria-label="Type your question">
+        <button type="submit" class="send-btn" id="sendBtn" aria-label="Send message" disabled>
+          <svg class="icon"><use href="#icon-send"/></svg>
+        </button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ==========================================================================
+   Uzbekistan Constitution AI Chatbot — script.js
+   Pure vanilla JS, no dependencies, no backend required to run as-is.
+
+   Architecture:
+     1. FAQ_DATA / answer resolution   — the ONLY layer to touch for a
+                                          Flask + faq.json backend.
+     2. UI state & rendering           — message grouping, chips, scroll.
+     3. Event wiring                   — form submit, sidebar, chips.
+   ========================================================================== */
+
+/* ============================================================
+   1. DATA LAYER
+   ============================================================ */
+const FAQ_DATA = [
+  {
+    id: "adoption-date",
+    question: "When was the Constitution adopted?",
+    keywords: ["when", "adopt", "adopted", "date", "history", "1992", "2023", "referendum"],
+    answer: "The original Constitution of the Republic of Uzbekistan was adopted on December 8, 1992, by the Supreme Council. It was comprehensively updated through a nationwide referendum on April 30, 2023, and the revised text took effect on May 1, 2023."
+  },
+  {
+    id: "article-41",
+    question: "What is Article 41?",
+    keywords: ["article 41", "41", "education", "school"],
+    answer: "Article 41 protects the right to education. The state guarantees free general secondary and primary vocational education, while secondary specialized and higher education are made accessible to everyone in accordance with the law."
+  },
+  {
+    id: "citizens-rights",
+    question: "What are citizens' rights?",
+    keywords: ["citizens", "rights", "freedoms", "human rights", "civil rights"],
+    answer: "Part Two of the Constitution sets out human and civil rights and freedoms. It covers personal rights such as life, liberty and dignity, political rights such as voting, association and free speech, and economic, social and cultural rights such as education, health care, work and a healthy environment. All citizens are equal before the law."
+  },
+  {
+    id: "state-language",
+    question: "What is the state language?",
+    keywords: ["state language", "official language", "language", "uzbek language"],
+    answer: "Uzbek is the state language of the Republic of Uzbekistan under Article 4. The state also guarantees respect for the languages, customs and traditions of all nationalities and peoples living in the country."
+  },
+  {
+    id: "article-count",
+    question: "How many articles are there?",
+    keywords: ["how many articles", "articles", "chapters", "parts", "sections", "number of articles"],
+    answer: "Following the 2023 constitutional reform, the Constitution now contains 155 articles organized into 6 parts and 27 chapters — up from 128 articles in the original 1992 version."
+  }
+];
+
+const FALLBACK_ANSWER =
+  "I don't have a confident answer for that yet. Try one of the sample questions below, or ask about the Constitution's adoption date, a specific article, citizens' rights, the state language, or the number of articles.";
+
+const LANDING_MESSAGE =
+  "Hello! I am your Uzbekistan Constitution AI Assistant. Ask me anything about the Constitution.";
+
+/**
+ * Resolves an answer for free-text input using local keyword matching.
+ * Kept separate from getBotResponse() so the matching strategy can evolve
+ * independently of how the answer is fetched.
+ */
+function findLocalAnswer(userText) {
+  const normalized = userText.toLowerCase().trim();
+  if (!normalized) return FALLBACK_ANSWER;
+
+  let bestMatch = null;
+  let bestScore = 0;
+
+  FAQ_DATA.forEach(item => {
+    let score = 0;
+    item.keywords.forEach(keyword => {
+      if (normalized.includes(keyword.toLowerCase())) {
+        score += keyword.split(' ').length; // multi-word keywords score higher
+      }
+    });
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = item;
+    }
+  });
+
+  return bestMatch ? bestMatch.answer : FALLBACK_ANSWER;
+}
+
+/**
+ * Single entry point for getting a bot reply. This is the ONLY function
+ * you need to change to connect a Flask backend — everything else in this
+ * file is UI plumbing and does not need to change.
+ *
+ *   async function getBotResponse(userText) {
+ *     const res = await fetch('/api/ask', {
+ *       method: 'POST',
+ *       headers: { 'Content-Type': 'application/json' },
+ *       body: JSON.stringify({ question: userText })
+ *     });
+ *     if (!res.ok) throw new Error('Request failed');
+ *     const data = await res.json();
+ *     return data.answer;
+ *   }
+ *
+ * Matching Flask route:
+ *
+ *   @app.route('/api/ask', methods=['POST'])
+ *   def ask():
+ *       question = request.json.get('question', '')
+ *       with open('faq.json') as f:
+ *           faq = json.load(f)
+ *       answer = match_question(question, faq)
+ *       return jsonify({'answer': answer})
+ */
+async function getBotResponse(userText) {
+  return findLocalAnswer(userText);
+}
+
+/* ============================================================
+   2. DOM REFERENCES
+   ============================================================ */
+const chatMessages    = document.getElementById('chatMessages');
+const typingIndicator = document.getElementById('typingIndicator');
+const chatForm         = document.getElementById('chatForm');
+const userInput         = document.getElementById('userInput');
+const sendBtn            = document.getElementById('sendBtn');
+const scrollFab           = document.getElementById('scrollFab');
+const sampleQuestions      = document.getElementById('sampleQuestions');
+const sidebar                = document.getElementById('sidebar');
+const sidebarToggle           = document.getElementById('sidebarToggle');
+const sidebarClose             = document.getElementById('sidebarClose');
+const sidebarOverlay            = document.getElementById('sidebarOverlay');
+
+let lastGroup = null;   // currently open <div class="msg-group">
+let lastSender = null;  // 'bot' | 'user'
+let isSending = false;
+
+/* ============================================================
+   3. RENDERING HELPERS
+   ============================================================ */
+function formatTime(date) {
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function isNearBottom() {
+  const { scrollTop, scrollHeight, clientHeight } = chatMessages;
+  return scrollHeight - scrollTop - clientHeight < 80;
+}
+
+function scrollToBottom(smooth = true) {
+  chatMessages.scrollTo({ top: chatMessages.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+}
+
+function updateScrollFab() {
+  scrollFab.hidden = isNearBottom();
+}
+
+/** Adds a message bubble, grouping consecutive same-sender messages. */
+function addMessage(text, sender) {
+  const shouldStartNewGroup = sender !== lastSender || !lastGroup;
+
+  if (shouldStartNewGroup) {
+    lastGroup = document.createElement('div');
+    lastGroup.className = `msg-group ${sender}`;
+    chatMessages.appendChild(lastGroup);
+  }
+
+  // Only the last message in a bot group keeps its avatar visible.
+  if (sender === 'bot') {
+    lastGroup.querySelectorAll('.msg-row').forEach(row => row.classList.remove('avatar-visible'));
+  }
+
+  const row = document.createElement('div');
+  row.className = `msg-row${sender === 'bot' ? ' avatar-visible' : ''}`;
+
+  if (sender === 'bot') {
+    row.insertAdjacentHTML('afterbegin',
+      `<span class="avatar avatar--bot"><svg class="icon"><use href="#icon-seal"/></svg></span>`);
+  }
+
+  const content = document.createElement('div');
+  content.className = 'msg-content';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+
+  const time = document.createElement('span');
+  time.className = 'msg-time';
+  time.textContent = formatTime(new Date());
+
+  content.append(bubble, time);
+  row.appendChild(content);
+  lastGroup.appendChild(row);
+
+  lastSender = sender;
+
+  const wasNearBottom = isNearBottom();
+  if (wasNearBottom) scrollToBottom();
+  updateScrollFab();
+}
+
+/** Shows follow-up suggestion chips (FAQ questions other than the one just asked). */
+function addChips(excludeId) {
+  const remaining = FAQ_DATA.filter(item => item.id !== excludeId).slice(0, 3);
+  if (!remaining.length) return;
+
+  const row = document.createElement('div');
+  row.className = 'chip-row';
+  remaining.forEach(item => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.type = 'button';
+    chip.textContent = item.question;
+    chip.addEventListener('click', () => sendMessage(item.question));
+    row.appendChild(chip);
+  });
+  chatMessages.appendChild(row);
+
+  if (isNearBottom()) scrollToBottom();
+  updateScrollFab();
+}
+
+function showTyping() {
+  typingIndicator.hidden = false;
+  if (isNearBottom()) scrollToBottom();
+}
+function hideTyping() {
+  typingIndicator.hidden = true;
+}
+
+/* ============================================================
+   4. SEND MESSAGE FLOW
+   ============================================================ */
+async function sendMessage(text) {
+  const message = (text ?? userInput.value).trim();
+  if (!message || isSending) return;
+
+  isSending = true;
+  addMessage(message, 'user');
+  userInput.value = '';
+  updateSendButtonState();
+
+  showTyping();
+  const typingDelay = 450 + Math.random() * 450; // feels more natural than instant
+
+  try {
+    const matched = FAQ_DATA.find(item =>
+      item.keywords.some(k => message.toLowerCase().includes(k.toLowerCase()))
+    );
+    const [answer] = await Promise.all([
+      getBotResponse(message),
+      new Promise(resolve => setTimeout(resolve, typingDelay))
+    ]);
+    hideTyping();
+    addMessage(answer, 'bot');
+    addChips(matched ? matched.id : null);
+  } catch (err) {
+    hideTyping();
+    addMessage("Something went wrong while looking that up. Please try again.", 'bot');
+  } finally {
+    isSending = false;
+    userInput.focus();
+  }
+}
+
+function updateSendButtonState() {
+  sendBtn.disabled = userInput.value.trim().length === 0 || isSending;
+}
+
+/* ============================================================
+   5. EVENT WIRING
+   ============================================================ */
+chatForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  sendMessage();
+});
+
+userInput.addEventListener('input', updateSendButtonState);
+
+sampleQuestions.addEventListener('click', (e) => {
+  const btn = e.target.closest('.sample-q');
+  if (!btn) return;
+  sendMessage(btn.dataset.q);
+  closeSidebarOnMobile();
+});
+
+chatMessages.addEventListener('scroll', updateScrollFab);
+scrollFab.addEventListener('click', () => scrollToBottom());
+
+/* Mobile sidebar */
+function openSidebar() {
+  sidebar.classList.add('open');
+  sidebarOverlay.classList.add('visible');
+  sidebarToggle.setAttribute('aria-expanded', 'true');
+}
+function closeSidebar() {
+  sidebar.classList.remove('open');
+  sidebarOverlay.classList.remove('visible');
+  sidebarToggle.setAttribute('aria-expanded', 'false');
+}
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 880) closeSidebar();
+}
+sidebarToggle.addEventListener('click', () => {
+  sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+});
+sidebarClose.addEventListener('click', closeSidebar);
+sidebarOverlay.addEventListener('click', closeSidebar);
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+});
+
+/* ============================================================
+   6. INITIAL STATE
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  addMessage(LANDING_MESSAGE, 'bot');
+  addChips(null);
+  updateSendButtonState();
+  userInput.focus();
+});
+
+</script>
+</body>
+</html>
