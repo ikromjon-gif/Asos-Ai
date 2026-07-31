@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="AI assistant that answers questions about the Constitution of the Republic of Uzbekistan.">
-<title>Uzbekistan Constitution AI Chatbot</title>
+<meta name="description" content="AsosAI — Uzbekistan Constitution assistant with FAQ and AI (RAG-style) modes.">
+<title>AsosAI — Konstitutsiya Yordamchisi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<!-- Reusable seal icon, referenced everywhere via <use> -->
+<!-- Reusable icons -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="icon-seal" viewBox="0 0 60 60">
     <circle cx="30" cy="30" r="27"/>
@@ -27,6 +27,8 @@
   <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="icon-arrow-down" viewBox="0 0 24 24"><path d="M12 4v16M6 14l6 6 6-6"/></symbol>
+  <symbol id="icon-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/></symbol>
+  <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5V4.5Z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></symbol>
 </svg>
 
 <!-- ===== Fixed header ===== -->
@@ -39,14 +41,21 @@
     <div class="header-brand">
       <span class="seal seal--header" aria-hidden="true"><svg class="icon"><use href="#icon-seal"/></svg></span>
       <div class="header-titles">
-        <h1>Uzbekistan Constitution AI Chatbot</h1>
-        <p>Your guide to the Basic Law of the Republic of Uzbekistan</p>
+        <h1>Asos<span class="accent-text">AI</span></h1>
+        <p data-i18n="headerSub">Your guide to the Basic Law of the Republic of Uzbekistan</p>
       </div>
     </div>
 
-    <span class="status-pill" title="Assistant is ready to answer">
-      <span class="status-dot"></span> Online
-    </span>
+    <div class="header-right">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button data-ui-lang="uz" class="active">UZ</button>
+        <button data-ui-lang="en">EN</button>
+        <button data-ui-lang="ko">한국어</button>
+      </div>
+      <span class="status-pill" title="Assistant is ready to answer">
+        <span class="status-dot"></span> <span data-i18n="online">Online</span>
+      </span>
+    </div>
   </div>
 </header>
 
@@ -61,42 +70,26 @@
     </button>
 
     <section class="panel panel--about">
-      <h2 class="panel-title">About</h2>
-      <p class="panel-text">
+      <h2 class="panel-title" data-i18n="aboutTitle">About</h2>
+      <p class="panel-text" data-i18n="aboutText">
         This assistant answers questions about the Constitution of the Republic of Uzbekistan —
         adopted in 1992 and comprehensively renewed by national referendum in 2023.
-        Ask about specific articles, rights, state structure, or history.
       </p>
       <dl class="about-stats">
-        <div><dt>Adopted</dt><dd>Dec 8, 1992</dd></div>
-        <div><dt>Renewed</dt><dd>May 1, 2023</dd></div>
-        <div><dt>Articles</dt><dd>155</dd></div>
+        <div><dt data-i18n="statAdopted">Adopted</dt><dd>Dec 8, 1992</dd></div>
+        <div><dt data-i18n="statRenewed">Renewed</dt><dd>May 1, 2023</dd></div>
+        <div><dt data-i18n="statArticles">Articles</dt><dd>155</dd></div>
       </dl>
     </section>
 
     <section class="panel panel--questions">
-      <h2 class="panel-title">Sample Questions</h2>
+      <h2 class="panel-title" data-i18n="sampleQTitle">Sample Questions</h2>
       <div class="sample-questions" id="sampleQuestions">
-        <button class="sample-q" data-q="When was the Constitution adopted?">
-          <svg class="icon icon--sm"><use href="#icon-calendar"/></svg>
-          <span>When was the Constitution adopted?</span>
-        </button>
-        <button class="sample-q" data-q="What is Article 41?">
-          <svg class="icon icon--sm"><use href="#icon-scroll"/></svg>
-          <span>What is Article 41?</span>
-        </button>
-        <button class="sample-q" data-q="What are citizens' rights?">
-          <svg class="icon icon--sm"><use href="#icon-scale"/></svg>
-          <span>What are citizens' rights?</span>
-        </button>
-        <button class="sample-q" data-q="What is the state language?">
-          <svg class="icon icon--sm"><use href="#icon-globe"/></svg>
-          <span>What is the state language?</span>
-        </button>
-        <button class="sample-q" data-q="How many articles are there?">
-          <svg class="icon icon--sm"><use href="#icon-hash"/></svg>
-          <span>How many articles are there?</span>
-        </button>
+        <button class="sample-q" data-qid="adoption"><svg class="icon icon--sm"><use href="#icon-calendar"/></svg><span data-i18n-q="adoption">When was the Constitution adopted?</span></button>
+        <button class="sample-q" data-qid="article-41"><svg class="icon icon--sm"><use href="#icon-scroll"/></svg><span data-i18n-q="article-41">What is Article 41?</span></button>
+        <button class="sample-q" data-qid="citizens-rights"><svg class="icon icon--sm"><use href="#icon-scale"/></svg><span data-i18n-q="citizens-rights">What are citizens' rights?</span></button>
+        <button class="sample-q" data-qid="state-language"><svg class="icon icon--sm"><use href="#icon-globe"/></svg><span data-i18n-q="state-language">What is the state language?</span></button>
+        <button class="sample-q" data-qid="article-count"><svg class="icon icon--sm"><use href="#icon-hash"/></svg><span data-i18n-q="article-count">How many articles are there?</span></button>
       </div>
     </section>
 
@@ -105,7 +98,7 @@
         <img src="developer.jpg" alt="Tojiboev Ikromjon" class="developer-photo"
              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'developer-photo developer-photo--fallback',textContent:'TI'}))">
         <div class="developer-info">
-          <span class="dev-label">Developer</span>
+          <span class="dev-label" data-i18n="devLabel">Developer</span>
           <span class="dev-name">Tojiboev Ikromjon</span>
           <a class="dev-contact" href="mailto:ikromjonkorealife@gmail.com">ikromjonkorealife@gmail.com</a>
         </div>
@@ -117,7 +110,20 @@
   <main class="chat-wrap">
     <div class="chat-container">
 
-      <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Conversation"></div>
+      <div class="mode-switch" role="group" aria-label="Mode">
+        <button class="mode-btn active" data-mode="faq">
+          <svg class="icon icon--sm"><use href="#icon-book"/></svg>
+          <span data-i18n="modeFaq">FAQ</span>
+        </button>
+        <button class="mode-btn" data-mode="ai">
+          <svg class="icon icon--sm"><use href="#icon-sparkle"/></svg>
+          <span data-i18n="modeAi">AI</span>
+        </button>
+        <span class="mode-desc" id="modeDesc" data-i18n="modeFaqDesc">Instant answers from 5 curated questions</span>
+      </div>
+
+      <div class="chat-messages" id="chatMessagesFaq" role="log" aria-live="polite" aria-label="FAQ conversation"></div>
+      <div class="chat-messages" id="chatMessagesAi" role="log" aria-live="polite" aria-label="AI conversation" hidden></div>
 
       <button class="scroll-fab" id="scrollFab" aria-label="Scroll to latest message" hidden>
         <svg class="icon"><use href="#icon-arrow-down"/></svg>
@@ -129,7 +135,7 @@
       </div>
 
       <form class="chat-input-row" id="chatForm">
-        <input type="text" id="userInput" name="message" placeholder="Ask about the Constitution…" maxlength="300" autocomplete="off" aria-label="Type your question">
+        <input type="text" id="userInput" name="message" data-i18n-placeholder="inputPlaceholder" placeholder="Ask about the Constitution…" maxlength="300" autocomplete="off" aria-label="Type your question">
         <button type="submit" class="send-btn" id="sendBtn" aria-label="Send message" disabled>
           <svg class="icon"><use href="#icon-send"/></svg>
         </button>
