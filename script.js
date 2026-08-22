@@ -427,17 +427,62 @@ async function sendMessage(text) {
     await new Promise(resolve => setTimeout(resolve, typingDelay));
     hideTyping();
 
-    if (currentMode === 'faq') {
-      const match = findFaqAnswer(message, currentLang);
-      const answer = match ? match.answer : uiStrings[currentLang].fallback;
-      addMessage(answer, 'bot');
-      addChips(match ? match.id : null);
-    } else {
-      // AI mode: no backend connected yet — always show a clear placeholder.
-      // Replace this branch with a real fetch() to your Flask + LLM endpoint
-      // once it's ready (see getAIMatches()/README for the RAG scaffold).
-      addMessage(uiStrings[currentLang].aiNotConnected, 'bot');
+if (currentMode === 'faq') {
+  // FAQ MODE
+  const match = findFaqAnswer(message, currentLang);
+  const answer = match
+    ? match.answer
+    : uiStrings[currentLang].fallback;
+
+  addMessage(answer, 'bot');
+  addChips(match ? match.id : null);
+
+} else {
+  // AI MODE → FastAPI → Ollama → Qwen
+
+  try {
+    const response = await fetch(
+      'https://psoriatic-unsharply-stefani.ngrok-free.dev/chat',
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          message: message
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `AI server xatosi: ${response.status}`
+      );
     }
+
+    const data = await response.json();
+
+    // FastAPI javobi: { "answer": "..." }
+    if (data.answer) {
+      addMessage(data.answer, 'bot');
+    } else {
+      throw new Error(
+        data.error || 'AI javob qaytarmadi.'
+      );
+    }
+
+  } catch (error) {
+    console.error('AI Backend Error:', error);
+
+    addMessage(
+      "⚠️ AI server bilan bog'lanib bo'lmadi. " +
+      "Server va tunnel ishlayotganini tekshiring.",
+      'bot'
+    );
+  }
+}
   } catch (err) {
     hideTyping();
     console.error('AsosAI sendMessage error:', err);
