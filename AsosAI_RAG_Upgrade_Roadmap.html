@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AsosAI — Real RAG Upgrade Roadmap</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#07110d;color:#edf7f0;line-height:1.55}
+.wrap{max-width:1180px;margin:auto;padding:34px 20px 70px}.hero{background:linear-gradient(135deg,#0d2519,#102d20);border:1px solid #28563c;border-radius:24px;padding:30px;box-shadow:0 20px 60px #0005}
+h1{margin:0 0 8px;font-size:34px}h2{margin-top:34px}.sub{color:#b8d1c0}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.badge{padding:6px 11px;border-radius:999px;background:#183b28;border:1px solid #326748;font-size:13px}
+.progress{margin-top:22px;background:#08150e;border-radius:12px;height:12px;overflow:hidden}.bar{height:100%;width:25%;background:#63d18b}
+.note{margin:22px 0;padding:16px 18px;border-left:4px solid #63d18b;background:#0c1d14;border-radius:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:#0b1912;border:1px solid #244633;border-radius:17px;padding:20px}.card h3{margin:0 0 8px}.status{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#8fe0aa}
+table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid #284a37;border-radius:16px;background:#0b1912}th,td{padding:14px;border-bottom:1px solid #1e3829;text-align:left;vertical-align:top}th{background:#12251a;color:#9de5b4}tr:last-child td{border-bottom:0}.done{color:#7fe3a0}.todo{color:#ffd27d}
+code{background:#13251b;padding:2px 6px;border-radius:6px;color:#b8f0c9}.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:15px 0}.step{padding:10px 13px;border:1px solid #315d43;border-radius:10px;background:#102319}.arrow{color:#73d894}
+.check{font-size:20px;margin-right:8px}ul{padding-left:22px}.critical{border-color:#755f28;background:#211c0b}.ai{border-color:#315c82;background:#0c1723}
+.footer{margin-top:30px;color:#91a99a;font-size:13px}
+@media(max-width:650px){h1{font-size:27px}th:nth-child(2),td:nth-child(2){display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<h1>AsosAI — Real RAG Upgrade Roadmap</h1>
+<div class="sub">Mavjud repository asosida: frontendni saqlab, haqiqiy Backend API + Embeddings + Vector DB + LLM + source-grounded RAG tizimiga o'tish.</div>
+<div class="badges">
+<span class="badge">UZ / EN / KO</span><span class="badge">Vanilla JS frontend</span>
+<span class="badge">Flask backend</span><span class="badge">FAISS</span><span class="badge">Sentence Transformers</span><span class="badge">LLM</span>
+</div>
+<div class="progress"><div class="bar"></div></div>
+<p><b>Hozirgi holat:</b> ~25% — UI va keyword retrieval tayyor. RAG pipeline hali yo'q.</p>
+</section>
+
+<div class="note">
+<b>Muhim:</b> mavjud <code>script.js</code>da KNOWLEDGE_BASE va keyword scoring ishlayapti. README ham real RAG uchun Flask + embedding + FAISS/Chroma + LLM oqimini ko'rsatadi. Demak, frontendni boshidan yozmaymiz — backendni bosqichma-bosqich ulaymiz.
+</div>
+
+<h2>1. Yakuniy arxitektura</h2>
+<div class="flow">
+<div class="step">Browser / index.html</div><span class="arrow">→</span>
+<div class="step">script.js</div><span class="arrow">→</span>
+<div class="step">POST /api/rag-ask</div><span class="arrow">→</span>
+<div class="step">Flask API</div><span class="arrow">→</span>
+<div class="step">Embedding</div><span class="arrow">→</span>
+<div class="step">FAISS Vector DB</div><span class="arrow">→</span>
+<div class="step">Top-k chunks</div><span class="arrow">→</span>
+<div class="step">LLM</div><span class="arrow">→</span>
+<div class="step">Answer + Sources</div>
+</div>
+
+<h2>2. Ketma-ket bajariladigan ishlar</h2>
+<table>
+<thead><tr><th>#</th><th>Vazifa</th><th>Nima qilinadi</th><th>Natija / tekshiruv</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Repository audit</td><td><code>index.html</code>, <code>style.css</code>, <code>script.js</code> va README tekshiriladi. Frontend API uchun qaysi joy o'zgarishi aniqlanadi.</td><td class="done">Frontendni buzmasdan backend boundary aniqlanadi.</td></tr>
+<tr><td>2</td><td>Backend skeleton</td><td><code>backend/</code> papka, Flask app, <code>/api/health</code>, CORS, <code>requirements.txt</code>, <code>.env</code>.</td><td><code>/api/health → {"status":"ok"}</code></td></tr>
+<tr><td>3</td><td>Knowledge base → documents</td><td>Hozirgi 3 tildagi 9×3 ma'lumotni RAG uchun strukturali document/chunk formatiga o'tkazish. Har chunkda <code>id, language, title, article, text, source</code>.</td><td>27 ta boshlang'ich knowledge item toza metadata bilan mavjud.</td></tr>
+<tr><td>4</td><td>Chunking</td><td>Konstitutsiya matnini imkon qadar rasmiy manbadan to'liqroq corpusga aylantirish; juda katta matnlarni semantik chunklarga ajratish.</td><td>Chunklar overlap va metadata bilan saqlanadi.</td></tr>
+<tr><td>5</td><td>Embedding model</td><td>Sentence Transformers tanlanadi. UZ/EN/KO uchun multilingual model ishlatiladi. Embedding pipeline yoziladi.</td><td>Query → fixed-length vector; multilingual savollar sinovdan o'tadi.</td></tr>
+<tr><td>6</td><td>Vector DB</td><td>FAISS index yaratiladi. Embeddinglar indexga yoziladi. Metadata alohida JSON/SQLite bilan bog'lanadi.</td><td>Query → Top-3/Top-5 relevant chunks.</td></tr>
+<tr><td>7</td><td>Retrieval API</td><td><code>POST /api/search</code> endpoint: question + lang → retrieved chunks + scores + sources.</td><td>Frontenddan mustaqil retrieval test qilinadi.</td></tr>
+<tr><td>8</td><td>LLM generation</td><td>Retrieved context + user question asosida LLM prompt tuziladi. LLM faqat berilgan contextga tayangan holda javob beradi.</td><td>Natural-language answer + source IDs.</td></tr>
+<tr><td>9</td><td>Haqiqiy RAG endpoint</td><td><code>POST /api/rag-ask</code>: query → embedding → FAISS → top-k → prompt → LLM → answer + citations.</td><td class="done">End-to-end RAG ishlaydi.</td></tr>
+<tr><td>10</td><td>Frontend integration</td><td><code>getAIMatches()</code> o'rniga backend <code>fetch()</code>. FAQ rejimi o'z holicha qoladi.</td><td>AI mode real API bilan javob beradi.</td></tr>
+<tr><td>11</td><td>Grounding / hallucination guard</td><td>Context bo'lmasa “ma'lumot topilmadi” qaytarish; modelga tashqi bilimdan taxmin qilmaslik talabi.</td><td>Out-of-domain savollar nazorat qilinadi.</td></tr>
+<tr><td>12</td><td>Source citation UI</td><td>Modda, title, source metadata frontendda ko'rsatiladi.</td><td>Har AI javobining qaysi chunk/moddadan kelgani ko'rinadi.</td></tr>
+<tr><td>13</td><td>Evaluation</td><td>UZ/EN/KO bo'yicha test savollar; retrieval Recall@k, answer faithfulness va source correctness tekshiriladi.</td><td>Kamida test dataset + natijalar jadvali.</td></tr>
+<tr><td>14</td><td>Security & cost</td><td>API key faqat backend <code>.env</code>da. Rate limit, input validation, max query length.</td><td>Secret frontendga chiqmaydi.</td></tr>
+<tr><td>15</td><td>Deployment</td><td>Frontend + Flask backend deploy. FAISS index build/deploy strategiyasi tanlanadi.</td><td>Public URL orqali real RAG demo.</td></tr>
+<tr><td>16</td><td>README / portfolio</td><td>Architecture diagram, stack, RAG flow, screenshots, API endpoints, evaluation results va limitation yoziladi.</td><td class="done">Interview-ready GitHub project.</td></tr>
+</tbody>
+</table>
+
+<h2>3. AI tools bilan ishlash tartibi</h2>
+<div class="grid">
+<div class="card ai"><div class="status">AI #1 — Coding agent</div><h3>Claude Code / Cursor / Codex</h3><p>Har bosqichni alohida task qilib ber. “Existing code-ni saqla, minimal diff qil, test yoz” qoidasi bilan ishlat.</p></div>
+<div class="card ai"><div class="status">AI #2 — Debugging</div><h3>ChatGPT</h3><p>Error log, traceback va o'zgargan faylni ber. Sabab → fix → test tartibida ishlat.</p></div>
+<div class="card ai"><div class="status">AI #3 — Research</div><h3>Web / documentation</h3><p>Embedding model, FAISS, Flask, LLM API va deployment bo'yicha faqat rasmiy/current documentation tekshirilsin.</p></div>
+</div>
+
+<h2>4. Har bir bosqich uchun AIga beriladigan asosiy qoida</h2>
+<div class="note critical">
+<b>“Taxmin qilma.”</b> AI agentga mavjud repositoryni avval o'qit. Keyin o'zgartirish kirit. Har taskdan so'ng changed files, nima o'zgargani, test natijasi va keyingi dependency ko'rsatilishi kerak.
+</div>
+
+<h2>5. Ishni aynan shu tartibda boshlash</h2>
+<div class="grid">
+<div class="card"><span class="check">☐</span><b>Day 1:</b> Audit + Flask skeleton + health endpoint</div>
+<div class="card"><span class="check">☐</span><b>Day 2:</b> Knowledge base → documents/chunks</div>
+<div class="card"><span class="check">☐</span><b>Day 3:</b> Multilingual embeddings</div>
+<div class="card"><span class="check">☐</span><b>Day 4:</b> FAISS index + metadata</div>
+<div class="card"><span class="check">☐</span><b>Day 5:</b> Retrieval API + tests</div>
+<div class="card"><span class="check">☐</span><b>Day 6:</b> LLM generation + grounding</div>
+<div class="card"><span class="check">☐</span><b>Day 7:</b> End-to-end RAG endpoint</div>
+<div class="card"><span class="check">☐</span><b>Day 8:</b> Frontend integration + citations</div>
+<div class="card"><span class="check">☐</span><b>Day 9:</b> Evaluation + security + error handling</div>
+<div class="card"><span class="check">☐</span><b>Day 10:</b> Deployment + README + portfolio polish</div>
+</div>
+
+<h2>6. Definition of Done</h2>
+<ul>
+<li>☐ Backend Flask ishlaydi</li>
+<li>☐ <code>/api/health</code> ishlaydi</li>
+<li>☐ <code>/api/search</code> real embedding + FAISS bilan ishlaydi</li>
+<li>☐ <code>/api/rag-ask</code> real LLM bilan javob beradi</li>
+<li>☐ UZ / EN / KO savollar retrieval qiladi</li>
+<li>☐ Javob faqat retrieved contextga grounding qilinadi</li>
+<li>☐ Har javob source/article metadata ko'rsatadi</li>
+<li>☐ FAQ mode buzilmaydi</li>
+<li>☐ API key frontendda ko'rinmaydi</li>
+<li>☐ Test savollar va evaluation natijalari READMEga kiritiladi</li>
+<li>☐ Public demo ishlaydi</li>
+</ul>
+
+<div class="footer">
+AsosAI upgrade plan — repository holatiga moslangan. Maqsad: “keyword-search demo”dan “source-grounded multilingual RAG application”ga o'tish.
+</div>
+</div>
+</body>
+</html>
