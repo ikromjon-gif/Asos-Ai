@@ -4,6 +4,8 @@ Toza HTML/CSS/JS (backend yo'q). Ism — o'zbekcha "Asosiy Qonun" (Konstitutsiya
 so'zidan. Palitra: oq, qora (near-black) va yashil. **3 til: UZ / EN / KO** va
 **ikki rejim: FAQ va AI**.
 
+explain video link :https://lnkd.in/p/gMmdB_jj
+
 ## Ikki rejim farqi
 
 - **FAQ rejimi** — 5 ta tayyor savoldan kalit so'z bo'yicha tezkor javob (klassik FAQ bot).
